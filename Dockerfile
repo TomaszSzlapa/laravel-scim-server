@@ -1,14 +1,9 @@
-FROM php:8.4-alpine
+FROM php:8.5.12-zts-alpine3.23
 
 # Base tools and PHP extensions
 RUN apk add --no-cache git jq moreutils \
-    && apk add --no-cache $PHPIZE_DEPS postgresql-dev sqlite-dev \
-    && docker-php-ext-install pdo_pgsql pdo_sqlite \
-    && pecl install xdebug \
-    && docker-php-ext-enable xdebug \
-    && echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
-    && echo "xdebug.client_host = 172.19.0.1" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-
+ && apk add --no-cache $PHPIZE_DEPS postgresql-dev sqlite-dev \
+ && docker-php-ext-install pdo_pgsql pdo_sqlite
 # Composer + fresh Laravel app
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 RUN composer create-project --prefer-dist laravel/laravel example && cd example
